@@ -8,17 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var steps: Double = 0
+    let healthKit = HealthKitManager()
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text("Steps Today")
+                .font(.headline)
+            Text("\(Int(steps))")
+                .font(.largeTitle)
         }
-        .padding()
+        .onAppear {
+            healthKit.requestPermission { success in
+                if success {
+                    healthKit.fetchTodaySteps { count in
+                        DispatchQueue.main.async {
+                            steps = count
+                        }
+                    }
+                }
+            }
+        }
     }
-}
-
-#Preview {
-    ContentView()
 }
